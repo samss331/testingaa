@@ -11,7 +11,7 @@
   "lastShownReleaseNotesVersion": "[scrubbed]",
   "enableProLazyEditsMode": true,
   "enableProSmartFilesContextMode": true,
-  "selectedTemplateId": "jeff-kazzee/ternary-template-angular",
+  "selectedTemplateId": "TernaryStudio/Ternary-Template-Angular",,
   "selectedChatMode": "build",
   "acceptedCommunityCode": true,
   "enableAutoFixProblems": false,

@@ -93,6 +93,17 @@ export function generateAppFilesSnapshotData(
         .replace(/\\/g, "/");
       try {
         if (isBinaryFile(entryPath)) {
+          const ext = path.extname(entryPath).toLowerCase();
+          if (ext === ".ico") {
+            // .ico files (e.g., public/favicon.ico) can change due to generator/build differences.
+            // Scrub their hash to keep snapshots stable across environments.
+            files.push({
+              relativePath,
+              content: '[binary hash="<scrubbed>"]',
+            });
+            continue;
+          }
+
           const fileBuffer = fs.readFileSync(entryPath);
           const hash = crypto
             .createHash("sha256")
