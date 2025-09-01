@@ -9,6 +9,8 @@ test("template - community", async ({ po }) => {
 
   await po.selectTemplate("Angular");
   await po.page.getByRole("button", { name: "Accept" }).click();
+  // Wait for the consent dialog to fully close/detach to avoid overlay intercepting clicks
+  await po.page.waitForSelector('[role="alertdialog"]', { state: "detached" });
   await po.page
     .locator("section")
     .filter({ hasText: "Community" })

@@ -624,11 +624,6 @@ export class PageObject {
   }
 
   async waitForChatCompletion() {
-    // First, ensure at least one message appears
-    await expect(this.page.getByTestId("messages-list")).toContainText(/./, {
-      timeout: Timeout.LONG,
-    });
-    // Then wait for the Retry button which only appears when not streaming
     await expect(this.getRetryButton()).toBeVisible({
       timeout: Timeout.EXTRA_LONG,
     });
@@ -892,6 +887,7 @@ export class PageObject {
       if (typeof obj.lastShownReleaseNotesVersion === "string") {
         obj.lastShownReleaseNotesVersion = "[scrubbed]";
       }
+
       sanitizedSettingsContent = JSON.stringify(obj, null, 2);
     } catch {
       // Fallback to previous regex-based scrubbing if JSON parse fails for any reason
@@ -947,43 +943,7 @@ export class PageObject {
   }
 
   async selectTemplate(templateName: string) {
-    // Ensure hub content is loaded before searching
-    await this.page.waitForLoadState("domcontentloaded");
-
-    const attempts = [
-      () => this.page.getByRole("img", { name: templateName }),
-      () => this.page.getByRole("button", { name: templateName }),
-      () => this.page.locator(`[alt="${templateName}"]`),
-      // Click the first element containing the template text within likely sections/cards
-      () =>
-        this.page
-          .locator(
-            "section, article, [data-testid], [role=group], [role=button]",
-          )
-          .filter({ hasText: templateName })
-          .first(),
-      // Fallback: any visible text match
-      () => this.page.getByText(templateName, { exact: true }).first(),
-    ];
-
-    let clicked = false;
-    for (const getLocator of attempts) {
-      const loc = getLocator();
-      try {
-        await loc
-          .first()
-          .waitFor({ state: "visible", timeout: Timeout.MEDIUM });
-        await loc.first().click({ timeout: Timeout.MEDIUM });
-        clicked = true;
-        break;
-      } catch {
-        // try next strategy
-      }
-    }
-
-    if (!clicked) {
-      throw new Error(`Template not found/clickable: ${templateName}`);
-    }
+    await this.page.getByRole("img", { name: templateName }).click();
   }
 
   async goToHubAndSelectTemplate(templateName: "Next.js Template") {
