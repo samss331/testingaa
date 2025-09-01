@@ -949,7 +949,7 @@ export class PageObject {
   async selectTemplate(templateName: string) {
     // Ensure hub content is loaded before searching
     await this.page.waitForLoadState("domcontentloaded");
-    
+
     const attempts = [
       () => this.page.getByRole("img", { name: templateName }),
       () => this.page.getByRole("button", { name: templateName }),
@@ -957,7 +957,9 @@ export class PageObject {
       // Click the first element containing the template text within likely sections/cards
       () =>
         this.page
-          .locator("section, article, [data-testid], [role=group], [role=button]")
+          .locator(
+            "section, article, [data-testid], [role=group], [role=button]",
+          )
           .filter({ hasText: templateName })
           .first(),
       // Fallback: any visible text match
@@ -968,7 +970,9 @@ export class PageObject {
     for (const getLocator of attempts) {
       const loc = getLocator();
       try {
-        await loc.first().waitFor({ state: "visible", timeout: Timeout.MEDIUM });
+        await loc
+          .first()
+          .waitFor({ state: "visible", timeout: Timeout.MEDIUM });
         await loc.first().click({ timeout: Timeout.MEDIUM });
         clicked = true;
         break;
